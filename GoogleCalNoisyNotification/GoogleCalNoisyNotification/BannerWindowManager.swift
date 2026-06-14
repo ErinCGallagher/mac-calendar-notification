@@ -19,7 +19,7 @@ class BannerWindowManager {
             let bannerHeight: CGFloat = 80 
             
             let panel = NSPanel(
-                contentRect: NSRect(x: 0, y: screenFrame.height - bannerHeight - 100, width: screenFrame.width, height: bannerHeight),
+                contentRect: NSRect(x: 0, y: (screenFrame.height - bannerHeight) / 2, width: screenFrame.width, height: bannerHeight),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
