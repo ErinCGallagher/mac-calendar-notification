@@ -15,23 +15,22 @@ Icon
 # --- Xcode ---
 # User settings
 xcuserdata/
-
-# Compatibility with Xcode 8 and earlier
-*.xcscmblueprint
-*.xccheckout
-
-# Compatibility with Xcode 3 and earlier
-build/
-DerivedData/
-*.moved-aside
-*.pbxuser
-!default.pbxuser
+*.userdata
+*.lsadump.pb
 *.mode1v3
-!default.mode1v3
 *.mode2v3
-!default.mode2v3
 *.perspectivev3
-!default.perspectivev3
+
+# --- Secrets & Environment ---
+.env
+.env.*
+*.secret
+
+# --- Editor Backups ---
+*.swp
+*.swo
+*~
+.DS_Store
 
 # Obj-C/Swift specific
 *.hmap
