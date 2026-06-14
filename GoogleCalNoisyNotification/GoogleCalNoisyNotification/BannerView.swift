@@ -11,27 +11,43 @@ struct WavingShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        let waveHeight: CGFloat = 4
-        let numWaves: CGFloat = 2
+        let waveHeight: CGFloat = 2
+        let numWaves: CGFloat = 1.5
         
-        // Start at top right
+        // --- Top Edge ---
+        // Move to top right (fixed point)
         path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
         
-        // Top edge
-        path.addLine(to: CGPoint(x: rect.minX + 8, y: rect.minY))
+        // Top edge with vertical ripples
+        for x in stride(from: rect.maxX, through: rect.minX, by: -2) {
+            let relativeX = (rect.maxX - x) / rect.width
+            let sine = sin(relativeX * .pi * numWaves + phase)
+            // Ripple gets stronger as we move left (away from the tow bar)
+            let yOffset = sine * waveHeight * relativeX
+            path.addLine(to: CGPoint(x: x, y: rect.minY + yOffset))
+        }
         
-        // Left (trailing) edge - the fluttery part
+        // --- Left (Trailing) Edge ---
+        // Horizontal ripples on the left edge
         for y in stride(from: rect.minY, through: rect.maxY, by: 1) {
             let relativeY = y / rect.height
             let sine = sin(relativeY * .pi * numWaves + phase)
-            let xOffset = sine * waveHeight * (1.0 - relativeY * 0.2) // More flutter at the top/middle
+            // Maximum flutter on the far left edge
+            let xOffset = sine * waveHeight * 1.5
             path.addLine(to: CGPoint(x: rect.minX + xOffset, y: y))
         }
         
-        // Bottom edge
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        // --- Bottom Edge ---
+        // Bottom edge with vertical ripples
+        for x in stride(from: rect.minX, through: rect.maxX, by: 2) {
+            let relativeX = (rect.maxX - x) / rect.width
+            let sine = sin(relativeX * .pi * numWaves + phase + .pi) // phase shift for variety
+            let yOffset = sine * waveHeight * relativeX
+            path.addLine(to: CGPoint(x: x, y: rect.maxY + yOffset))
+        }
         
-        // Right edge (connected to tow bar)
+        // --- Right Edge ---
+        // Back to top right
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
         
         path.closeSubpath()
@@ -58,9 +74,9 @@ struct BannerView: View {
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
             }
-            .padding(.leading, 24) // Extra padding for the waving edge
+            .padding(.leading, 24)
             .padding(.trailing, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, 24)
             .background(
                 WavingShape(phase: phase)
                     .fill(Color.black)

@@ -23,6 +23,13 @@ struct GoogleCalNoisyNotificationApp: App {
                 )
             }
             
+            Button("Test Long Banner") {
+                BannerWindowManager.show(
+                    title: "Quarterly Global Strategy Alignment and Resource Planning Session",
+                    startTime: "In 3 minutes — 10:00 AM"
+                )
+            }
+            
             Divider()
             
             Button("Quit") {
