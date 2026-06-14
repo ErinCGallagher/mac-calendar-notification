@@ -10,8 +10,16 @@ import SwiftUI
 @main
 struct GoogleCalNoisyNotificationApp: App {
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("GoogleCalNoisyNotificationsApp", systemImage: "calendar.badge.clock") {
+            Button("GoogleCalNoisyNotificationsApp") { }
+                .disabled(true)
+            
+            Divider()
+            
+            Button("Quit") {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q")
         }
     }
 }
