@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct GoogleCalNoisyNotificationApp: App {
+    @State private var calendarManager = CalendarManager()
+    
     var body: some Scene {
         MenuBarExtra("GoogleCalNoisyNotificationsApp", systemImage: "calendar.badge.clock") {
             Button("GoogleCalNoisyNotificationsApp") { }
