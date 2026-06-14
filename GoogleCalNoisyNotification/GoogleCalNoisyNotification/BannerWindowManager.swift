@@ -4,11 +4,11 @@ import AppKit
 class BannerWindowManager {
     static var window: NSPanel?
     
-    static func show(title: String, startTime: String) {
+    static func show(title: String, location: String?, startTime: String) {
         DispatchQueue.main.async {
             window?.close()
             
-            let animationView = BannerAnimationView(title: title, startTime: startTime) {
+            let animationView = BannerAnimationView(title: title, location: location, startTime: startTime) {
                 window?.close()
                 window = nil
             }

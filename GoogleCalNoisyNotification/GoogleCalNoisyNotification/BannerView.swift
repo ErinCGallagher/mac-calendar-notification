@@ -11,45 +11,35 @@ struct WavingShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        let waveHeight: CGFloat = 2
+        let waveHeight: CGFloat = 1.5
         let numWaves: CGFloat = 1.5
         
         // --- Top Edge ---
-        // Move to top right (fixed point)
         path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
-        
-        // Top edge with vertical ripples
         for x in stride(from: rect.maxX, through: rect.minX, by: -2) {
             let relativeX = (rect.maxX - x) / rect.width
             let sine = sin(relativeX * .pi * numWaves + phase)
-            // Ripple gets stronger as we move left (away from the tow bar)
             let yOffset = sine * waveHeight * relativeX
             path.addLine(to: CGPoint(x: x, y: rect.minY + yOffset))
         }
         
         // --- Left (Trailing) Edge ---
-        // Horizontal ripples on the left edge
         for y in stride(from: rect.minY, through: rect.maxY, by: 1) {
             let relativeY = y / rect.height
             let sine = sin(relativeY * .pi * numWaves + phase)
-            // Maximum flutter on the far left edge
             let xOffset = sine * waveHeight * 1.5
             path.addLine(to: CGPoint(x: rect.minX + xOffset, y: y))
         }
         
         // --- Bottom Edge ---
-        // Bottom edge with vertical ripples
         for x in stride(from: rect.minX, through: rect.maxX, by: 2) {
             let relativeX = (rect.maxX - x) / rect.width
-            let sine = sin(relativeX * .pi * numWaves + phase + .pi) // phase shift for variety
+            let sine = sin(relativeX * .pi * numWaves + phase + .pi)
             let yOffset = sine * waveHeight * relativeX
             path.addLine(to: CGPoint(x: x, y: rect.maxY + yOffset))
         }
         
-        // --- Right Edge ---
-        // Back to top right
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        
         path.closeSubpath()
         return path
     }
@@ -57,18 +47,26 @@ struct WavingShape: Shape {
 
 struct BannerView: View {
     let title: String
+    let location: String?
     let startTime: String
     
     @State private var phase: CGFloat = 0
     
     var body: some View {
-        HStack(spacing: -12) { // Tighter spacing for the custom shape
+        HStack(spacing: -12) {
             // The Flag
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.white)
                     .lineLimit(2)
+                
+                if let location = location, !location.isEmpty {
+                    Text(location)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.9))
+                        .lineLimit(1)
+                }
                 
                 Text(startTime)
                     .font(.system(size: 14))
@@ -108,6 +106,7 @@ struct BannerView: View {
 #Preview {
     BannerView(
         title: "Product Design Review",
+        location: "Conference Room A",
         startTime: "In 3 minutes — 2:30 PM"
     )
     .padding()

@@ -19,6 +19,7 @@ struct GoogleCalNoisyNotificationApp: App {
             Button("Test Banner") {
                 BannerWindowManager.show(
                     title: "Test Meeting",
+                    location: "Room 101",
                     startTime: "In 3 minutes — 2:30 PM"
                 )
             }
@@ -26,6 +27,7 @@ struct GoogleCalNoisyNotificationApp: App {
             Button("Test Long Banner") {
                 BannerWindowManager.show(
                     title: "Quarterly Global Strategy Alignment and Resource Planning Session",
+                    location: "Main Auditorium - Building B",
                     startTime: "In 3 minutes — 10:00 AM"
                 )
             }
