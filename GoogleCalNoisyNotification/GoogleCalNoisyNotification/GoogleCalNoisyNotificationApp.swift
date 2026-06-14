@@ -16,6 +16,13 @@ struct GoogleCalNoisyNotificationApp: App {
             Button("GoogleCalNoisyNotificationsApp") { }
                 .disabled(true)
             
+            Button("Test Banner") {
+                BannerWindowManager.show(
+                    title: "Test Meeting",
+                    startTime: "In 3 minutes — 2:30 PM"
+                )
+            }
+            
             Divider()
             
             Button("Quit") {
