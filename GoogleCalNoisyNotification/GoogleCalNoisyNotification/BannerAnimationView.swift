@@ -17,7 +17,7 @@ struct BannerAnimationView: View {
             BannerView(title: title, startTime: startTime)
                 .offset(x: offset)
         }
-        .frame(width: screenWidth, height: 80)
+        .frame(width: screenWidth, height: 120)
         .onAppear {
             print("Animation started. Screen width: \(screenWidth)")
             

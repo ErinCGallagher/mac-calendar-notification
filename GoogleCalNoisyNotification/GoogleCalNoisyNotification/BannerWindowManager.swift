@@ -16,7 +16,7 @@ class BannerWindowManager {
             let hostingView = NSHostingView(rootView: animationView)
             
             let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
-            let bannerHeight: CGFloat = 80 
+            let bannerHeight: CGFloat = 120 
             
             let panel = NSPanel(
                 contentRect: NSRect(x: 0, y: (screenFrame.height - bannerHeight) / 2, width: screenFrame.width, height: bannerHeight),
