@@ -6,11 +6,7 @@ struct BannerView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            // The Plane
-            Text("✈️")
-                .font(.system(size: 28))
-            
-            // The Flag
+            // The Flag (Now on the left because we are traveling right)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 14, weight: .bold))
@@ -28,6 +24,10 @@ struct BannerView: View {
                     .fill(Color.black.opacity(0.75))
             )
             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+
+            // The Plane (Now on the right)
+            Text("🛫")
+                .font(.system(size: 28))
         }
     }
 }

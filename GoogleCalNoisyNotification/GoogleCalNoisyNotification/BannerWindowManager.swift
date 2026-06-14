@@ -8,12 +8,18 @@ class BannerWindowManager {
         DispatchQueue.main.async {
             window?.close()
             
-            let bannerView = BannerView(title: title, startTime: startTime)
-            let hostingView = NSHostingView(rootView: bannerView)
+            let animationView = BannerAnimationView(title: title, startTime: startTime) {
+                window?.close()
+                window = nil
+            }
             
-            // Use a panel for better overlay behavior
+            let hostingView = NSHostingView(rootView: animationView)
+            
+            let screenFrame = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+            let bannerHeight: CGFloat = 80 
+            
             let panel = NSPanel(
-                contentRect: .zero,
+                contentRect: NSRect(x: 0, y: screenFrame.height - bannerHeight - 100, width: screenFrame.width, height: bannerHeight),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
@@ -23,12 +29,12 @@ class BannerWindowManager {
             panel.level = .floating
             panel.isOpaque = false
             panel.backgroundColor = .clear
-            panel.hasShadow = true
+            panel.hasShadow = false
             panel.ignoresMouseEvents = true
             panel.isReleasedWhenClosed = false
             
-            // Add hosting view to a container to buffer constraints
-            let container = NSView()
+            // Re-apply the container strategy to prevent the layout loop
+            let container = NSView(frame: NSRect(x: 0, y: 0, width: screenFrame.width, height: bannerHeight))
             container.translatesAutoresizingMaskIntoConstraints = false
             panel.contentView = container
             
@@ -42,24 +48,8 @@ class BannerWindowManager {
                 hostingView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
             ])
             
-            // Calculate size and position
-            let size = hostingView.intrinsicContentSize
-            if let screen = NSScreen.main {
-                let screenFrame = screen.frame
-                let x = (screenFrame.width - size.width) / 2
-                let y = screenFrame.height - size.height - 100
-                panel.setFrame(NSRect(x: x, y: y, width: size.width, height: size.height), display: true)
-            }
-            
             panel.orderFrontRegardless()
             self.window = panel
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if self.window == panel {
-                    panel.close()
-                    self.window = nil
-                }
-            }
         }
     }
 }
