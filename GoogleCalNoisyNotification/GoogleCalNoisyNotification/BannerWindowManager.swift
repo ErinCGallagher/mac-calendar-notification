@@ -8,6 +8,9 @@ class BannerWindowManager {
         DispatchQueue.main.async {
             window?.close()
             
+            // Play a premium native alert sound
+            NSSound(named: "Glass")?.play()
+            
             let animationView = BannerAnimationView(title: title, location: location, startTime: startTime) {
                 window?.close()
                 window = nil
