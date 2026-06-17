@@ -85,6 +85,11 @@ struct GoogleCalNoisyNotificationApp: App {
                 }
             }
             
+            Toggle("Launch at Login", isOn: Binding(
+                get: { calendarManager.isLaunchAtLoginEnabled },
+                set: { _ in calendarManager.toggleLaunchAtLogin() }
+            ))
+            
             Divider()
             
             Menu("Test") {

@@ -23,6 +23,7 @@ import Foundation
 import EventKit
 import Observation
 import AppKit
+import ServiceManagement
 
 @Observable
 class CalendarManager {
@@ -78,12 +79,16 @@ class CalendarManager {
     // Alert offset configuration (in minutes, defaults to 3)
     var alertOffsetMinutes: Int = 3
     
+    // Launch at login preferences
+    var isLaunchAtLoginEnabled: Bool = false
+    
     private func loadSettings() {
         if let savedIds = UserDefaults.standard.stringArray(forKey: selectedCalendarsKey) {
             self.selectedCalendarIdentifiers = Set(savedIds)
         }
         self.isSoundEnabled = UserDefaults.standard.object(forKey: "IsSoundEnabled") as? Bool ?? true
         self.alertOffsetMinutes = UserDefaults.standard.object(forKey: "AlertOffsetMinutes") as? Int ?? 3
+        self.isLaunchAtLoginEnabled = (SMAppService.mainApp.status == .enabled)
     }
     
     private func saveSettings() {
@@ -100,6 +105,22 @@ class CalendarManager {
         UserDefaults.standard.set(minutes, forKey: "AlertOffsetMinutes")
         // Force reschedule with the new offset
         self.scheduleEventNotifications()
+    }
+    
+    func toggleLaunchAtLogin() {
+        let service = SMAppService.mainApp
+        do {
+            if service.status == .enabled {
+                try service.unregister()
+                isLaunchAtLoginEnabled = false
+            } else {
+                try service.register()
+                isLaunchAtLoginEnabled = true
+            }
+        } catch {
+            print("Failed to toggle Launch at Login: \(error.localizedDescription)")
+            isLaunchAtLoginEnabled = (service.status == .enabled)
+        }
     }
     
     func checkAuthStatus() {
