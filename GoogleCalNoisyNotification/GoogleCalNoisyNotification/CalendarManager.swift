@@ -1,3 +1,24 @@
+//
+//  CalendarManager.swift
+//  GoogleCalNoisyNotification
+//
+//  How Calendar Integration and Notifications Work:
+//
+//  1. Event Polling & Syncing:
+//     - Real-time: Listens to `.EKEventStoreChanged` notifications. When macOS syncs in the background
+//       or you edit an event, updates are pulled instantly.
+//     - Fallback: A background timer polls the local macOS event database every 5 minutes.
+//     - On-demand: Re-fetches events whenever the app becomes active (e.g., clicking the menu bar icon).
+//
+//  2. Notification Decision Logic:
+//     - Target Time: Computes a target alert time exactly 3 minutes before the meeting starts.
+//     - Future events: Schedules a precise Swift `Timer` to fire at that exact target time.
+//     - Near-future/just-started events: Triggers the notification immediately if the event starts
+//       in less than 3 minutes (or started within the last 60 seconds) and hasn't been alerted yet.
+//     - Past events: Ignored if started more than 60 seconds ago.
+//     - Rescheduling: Automatically invalidates and recreates timers if a meeting time is updated.
+//
+
 import Foundation
 import EventKit
 import Observation
