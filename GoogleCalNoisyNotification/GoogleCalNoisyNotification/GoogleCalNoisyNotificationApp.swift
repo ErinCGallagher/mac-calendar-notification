@@ -55,6 +55,22 @@ struct GoogleCalNoisyNotificationApp: App {
             
             Divider()
             
+            Button("Upcoming Alerts Today:") { }
+                .disabled(true)
+            
+            let upcoming = calendarManager.events.filter { ($0.startDate ?? Date()) >= Date() }
+            if upcoming.isEmpty {
+                Button("No upcoming meetings") { }
+                    .disabled(true)
+            } else {
+                ForEach(upcoming.prefix(5), id: \.eventIdentifier) { event in
+                    Button("\(event.title ?? "Untitled") (\(formatEventTime(event.startDate)))") { }
+                        .disabled(true)
+                }
+            }
+            
+            Divider()
+            
             Toggle("Play Notification Sound", isOn: Binding(
                 get: { calendarManager.isSoundEnabled },
                 set: { _ in calendarManager.toggleSound() }
@@ -87,6 +103,13 @@ struct GoogleCalNoisyNotificationApp: App {
             }
             .keyboardShortcut("q")
         }
+    }
+    
+    private func formatEventTime(_ date: Date?) -> String {
+        guard let date = date else { return "" }
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
 
