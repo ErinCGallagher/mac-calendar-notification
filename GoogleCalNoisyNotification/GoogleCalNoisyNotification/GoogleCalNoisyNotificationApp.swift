@@ -76,6 +76,15 @@ struct GoogleCalNoisyNotificationApp: App {
                 set: { _ in calendarManager.toggleSound() }
             ))
             
+            Menu("Alert Offset") {
+                ForEach([1, 2, 3, 5, 10], id: \.self) { minutes in
+                    Toggle("\(minutes) Minute\(minutes == 1 ? "" : "s") Before", isOn: Binding(
+                        get: { calendarManager.alertOffsetMinutes == minutes },
+                        set: { _ in calendarManager.setAlertOffset(minutes) }
+                    ))
+                }
+            }
+            
             Divider()
             
             Menu("Test") {

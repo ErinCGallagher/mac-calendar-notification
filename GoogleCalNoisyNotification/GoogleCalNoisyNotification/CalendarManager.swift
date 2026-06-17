@@ -75,11 +75,15 @@ class CalendarManager {
     // Sound alert preferences
     var isSoundEnabled: Bool = true
     
+    // Alert offset configuration (in minutes, defaults to 3)
+    var alertOffsetMinutes: Int = 3
+    
     private func loadSettings() {
         if let savedIds = UserDefaults.standard.stringArray(forKey: selectedCalendarsKey) {
             self.selectedCalendarIdentifiers = Set(savedIds)
         }
         self.isSoundEnabled = UserDefaults.standard.object(forKey: "IsSoundEnabled") as? Bool ?? true
+        self.alertOffsetMinutes = UserDefaults.standard.object(forKey: "AlertOffsetMinutes") as? Int ?? 3
     }
     
     private func saveSettings() {
@@ -89,6 +93,13 @@ class CalendarManager {
     func toggleSound() {
         isSoundEnabled.toggle()
         UserDefaults.standard.set(isSoundEnabled, forKey: "IsSoundEnabled")
+    }
+    
+    func setAlertOffset(_ minutes: Int) {
+        self.alertOffsetMinutes = minutes
+        UserDefaults.standard.set(minutes, forKey: "AlertOffsetMinutes")
+        // Force reschedule with the new offset
+        self.scheduleEventNotifications()
     }
     
     func checkAuthStatus() {
@@ -238,11 +249,12 @@ class CalendarManager {
             
             guard let startDate = event.startDate else { continue }
             
-            // Trigger 3 minutes before the start time
-            let notificationDate = startDate.addingTimeInterval(-180)
+            // Trigger customized minutes before the start time
+            let offsetInterval = TimeInterval(alertOffsetMinutes * 60)
+            let notificationDate = startDate.addingTimeInterval(-offsetInterval)
             
             if notificationDate > now {
-                // Event starts more than 3 minutes in the future. Schedule a precise timer.
+                // Event starts more than target offset in the future. Schedule a precise timer.
                 if let existingTimer = notificationTimers[eventID] {
                     // If the event start time was updated, reschedule the timer
                     if abs(existingTimer.fireDate.timeIntervalSince(notificationDate)) > 1.0 {
@@ -253,10 +265,10 @@ class CalendarManager {
                     scheduleTimer(for: event, at: notificationDate)
                 }
             } else {
-                // Event is starting within the next 3 minutes, or started in the last minute.
+                // Event is starting within the target offset, or started in the last minute.
                 // Trigger the alert immediately if we haven't already.
                 let timeUntilStart = startDate.timeIntervalSince(now)
-                if timeUntilStart > -60 && timeUntilStart <= 180 {
+                if timeUntilStart > -60 && timeUntilStart <= offsetInterval {
                     triggerNotification(for: event)
                 }
             }
