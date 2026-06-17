@@ -129,12 +129,15 @@ class CalendarManager {
             self.authStatus = status
             
             let hasAccess: Bool
-            if #available(macOS 14.0, *) {
-                hasAccess = (status == .fullAccess || status == .authorized)
-            } else {
-                hasAccess = (status == .authorized)
+            switch status {
+            case .fullAccess, .authorized, .writeOnly:
+                hasAccess = true
+            case .denied, .restricted, .notDetermined:
+                hasAccess = false
+            @unknown default:
+                hasAccess = false
             }
-            
+    
             if hasAccess {
                 self.updateAvailableCalendars()
             }
