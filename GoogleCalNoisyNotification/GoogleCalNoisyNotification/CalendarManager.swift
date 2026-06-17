@@ -252,11 +252,18 @@ class CalendarManager {
     
     private func scheduleEventNotifications() {
         let now = Date()
+        let maxTimerHorizon: TimeInterval = 4 * 60 * 60 // 4 hours
         
         // Cancel timers for events that are no longer in our upcoming list
+        // or have shifted beyond our scheduling horizon (4 hours)
         let fetchedEventIDs = Set(events.compactMap { $0.eventIdentifier })
         for (eventID, timer) in notificationTimers {
             if !fetchedEventIDs.contains(eventID) {
+                timer.invalidate()
+                notificationTimers.removeValue(forKey: eventID)
+            } else if let event = events.first(where: { $0.eventIdentifier == eventID }),
+                      let startDate = event.startDate,
+                      startDate.timeIntervalSince(now) > maxTimerHorizon {
                 timer.invalidate()
                 notificationTimers.removeValue(forKey: eventID)
             }
@@ -269,6 +276,9 @@ class CalendarManager {
             guard !notifiedEventIDs.contains(eventID) else { continue }
             
             guard let startDate = event.startDate else { continue }
+            
+            // Only schedule timers/notifications for events starting within the next 4 hours
+            guard startDate.timeIntervalSince(now) <= maxTimerHorizon else { continue }
             
             // Trigger customized minutes before the start time
             let offsetInterval = TimeInterval(alertOffsetMinutes * 60)
