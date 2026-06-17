@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import EventKit
 
 @main
 struct GoogleCalNoisyNotificationApp: App {
@@ -15,6 +16,44 @@ struct GoogleCalNoisyNotificationApp: App {
         MenuBarExtra("GoogleCalNoisyNotificationsApp", systemImage: "calendar.badge.clock") {
             Button("GoogleCalNoisyNotificationsApp") { }
                 .disabled(true)
+            
+            Divider()
+            
+            if calendarManager.authStatus == .denied || calendarManager.authStatus == .restricted {
+                Button("⚠️ Calendar Access Denied") { }
+                    .disabled(true)
+                Button("Enable in System Settings...") {
+                    calendarManager.openSystemSettingsCalendars()
+                }
+            } else if calendarManager.authStatus == .notDetermined {
+                Button("Grant Calendar Access...") {
+                    calendarManager.requestAccess()
+                }
+            } else {
+                if calendarManager.allCalendars.isEmpty {
+                    Button("No Calendars Found") { }
+                        .disabled(true)
+                    Button("Link Google Account in Settings...") {
+                        calendarManager.openSystemSettingsInternetAccounts()
+                    }
+                } else {
+                    Menu("Select Calendars") {
+                        let grouped = Dictionary(grouping: calendarManager.allCalendars, by: { $0.source?.title ?? "Other" })
+                        ForEach(grouped.keys.sorted(), id: \.self) { sourceTitle in
+                            Menu(sourceTitle) {
+                                ForEach(grouped[sourceTitle] ?? [], id: \.calendarIdentifier) { calendar in
+                                    Toggle(calendar.title, isOn: Binding(
+                                        get: { calendarManager.isCalendarSelected(calendar.calendarIdentifier) },
+                                        set: { _ in calendarManager.toggleCalendar(calendar.calendarIdentifier) }
+                                    ))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Divider()
             
             Button("Test Banner") {
                 BannerWindowManager.show(
@@ -41,3 +80,4 @@ struct GoogleCalNoisyNotificationApp: App {
         }
     }
 }
+
