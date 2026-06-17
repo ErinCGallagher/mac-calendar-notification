@@ -55,6 +55,13 @@ struct GoogleCalNoisyNotificationApp: App {
             
             Divider()
             
+            Toggle("Play Notification Sound", isOn: Binding(
+                get: { calendarManager.isSoundEnabled },
+                set: { _ in calendarManager.toggleSound() }
+            ))
+            
+            Divider()
+            
             Button("Test Banner") {
                 BannerWindowManager.show(
                     title: "Test Meeting",

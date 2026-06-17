@@ -72,14 +72,23 @@ class CalendarManager {
         cancelAllTimers()
     }
     
+    // Sound alert preferences
+    var isSoundEnabled: Bool = true
+    
     private func loadSettings() {
         if let savedIds = UserDefaults.standard.stringArray(forKey: selectedCalendarsKey) {
             self.selectedCalendarIdentifiers = Set(savedIds)
         }
+        self.isSoundEnabled = UserDefaults.standard.object(forKey: "IsSoundEnabled") as? Bool ?? true
     }
     
     private func saveSettings() {
         UserDefaults.standard.set(Array(selectedCalendarIdentifiers), forKey: selectedCalendarsKey)
+    }
+    
+    func toggleSound() {
+        isSoundEnabled.toggle()
+        UserDefaults.standard.set(isSoundEnabled, forKey: "IsSoundEnabled")
     }
     
     func checkAuthStatus() {
